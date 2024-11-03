@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Producto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input,
+        .form-group button {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .form-group button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-group button:hover {
+            background-color: #218838;
+        }
+        .preview {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 5px;
+        }
+        .preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 1rem;
+            border-radius: 5px;
+        }
+        .preview h3, .preview p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Subir Producto</h1>
+    <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" placeholder="Título del producto">
+    </div>
+    <div class="form-group">
+        <label for="precio">Precio</label>
+        <input type="number" id="precio" placeholder="Precio del producto">
+    </div>
+    <div class="form-group">
+        <label for="detalles">Detalles</label>
+        <input type="text" id="detalles" placeholder="Detalles del producto">
+    </div>
+    <div class="form-group">
+        <label for="imagen">Imagen</label>
+        <input type="file" id="imagen" accept="image/*" onchange="vistaPreviaProducto()">
+    </div>
+    <div class="form-group">
+        <button onclick="vistaPreviaProducto()">Vista Previa</button>
+        <button onclick="subirProducto()">Publicar Producto</button>
+    </div>
+    <div class="preview" id="preview">
+        <img id="preview-imagen" src="" alt="Vista Previa de la Imagen">
+        <div>
+            <h3 id="preview-titulo"></h3>
+            <p id="preview-precio"></p>
+            <p id="preview-detalles"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function vistaPreviaProducto() {
+        const titulo = document.getElementById('titulo').value;
+        const precio = document.getElementById('precio').value;
+        const detalles = document.getElementById('detalles').value;
+        const imagen = document.getElementById('imagen').files[0];
+
+        if (titulo && precio && detalles && imagen) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-imagen').src = e.target.result;
+                document.getElementById('preview-titulo').textContent = titulo;
+                document.getElementById('preview-precio').textContent = `Precio: $${precio}`;
+                document.getElementById('preview-detalles').textContent = `Detalles: ${detalles}`;
+                document.getElementById('preview').style.display = 'flex';
+            }
+            reader.readAsDataURL(imagen);
+        } else {
+            alert('Por favor, completa todos los campos.');
+        }
+    }
+
+    function subirProducto() {
+        const titulo = document.getElementById('titulo').value;
+        const precio = document.getElementById('precio').value;
+        const detalles = document.getElementById('detalles').value;
+        const imagen = document.getElementById('imagen').files[0];
+
+        if (titulo && precio && detalles && imagen) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const productos = JSON.parse(localStorage.getItem('productos')) || [];
+                productos.push({
+                    titulo: titulo,
+                    precio: precio,
+                    detalles: detalles,
+                    imagen: e.target.result
+                });
+                localStorage.setItem('productos', JSON.stringify(productos));
+                alert('Producto publicado exitosamente!');
+
+                // Limpiar campos y vista previa
+                document.getElementById('titulo').value = '';
+                document.getElementById('precio').value = '';
+                document.getElementById('detalles').value = '';
+                document.getElementById('imagen').value = '';
+                document.getElementById('preview').style.display = 'none';
+            }
+            reader.readAsDataURL(imagen);
+        } else {
+            alert('Por favor, completa todos los campos.');
+        }
+    }
+</script>
+
+</body>
+</html>
